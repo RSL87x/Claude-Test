@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Snake</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Snake Game</h1>
+        <div class="score-board">
+            <div class="score">Puntuación: <span id="score">0</span></div>
+            <div class="high-score">Récord: <span id="highScore">0</span></div>
+        </div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="controls">
+            <p>Usa las flechas del teclado para mover la serpiente</p>
+            <p>Espacio: Pausar/Reanudar</p>
+            <button id="startButton">Nuevo Juego</button>
+        </div>
+        <div id="gameOver" class="game-over hidden">
+            <h2>Game Over!</h2>
+            <p>Puntuación Final: <span id="finalScore">0</span></p>
+            <button id="restartButton">Jugar de Nuevo</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
