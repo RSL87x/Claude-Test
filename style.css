@@ -6,27 +6,28 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #333;
+    color: #e0e0e0;
 }
 
 .game-container {
-    background: white;
+    background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(100, 255, 218, 0.1);
     text-align: center;
+    border: 1px solid #333;
 }
 
 h1 {
-    color: #667eea;
+    color: #64ffda;
     margin-bottom: 20px;
     font-size: 2.5em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 0 20px rgba(100, 255, 218, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .score-board {
@@ -34,26 +35,28 @@ h1 {
     justify-content: space-around;
     margin-bottom: 20px;
     padding: 15px;
-    background: #f8f9fa;
+    background: rgba(0, 0, 0, 0.4);
     border-radius: 10px;
+    border: 1px solid #333;
 }
 
 .score, .high-score {
     font-size: 1.2em;
     font-weight: bold;
-    color: #555;
+    color: #b0b0b0;
 }
 
 .score span, .high-score span {
-    color: #667eea;
+    color: #64ffda;
     font-size: 1.3em;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
 }
 
 #gameCanvas {
-    border: 3px solid #667eea;
+    border: 3px solid #64ffda;
     border-radius: 10px;
-    background: #f0f0f0;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    background: #0a0a0a;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(100, 255, 218, 0.05);
 }
 
 .controls {
@@ -62,7 +65,7 @@ h1 {
 
 .controls p {
     margin: 10px 0;
-    color: #666;
+    color: #888;
     font-size: 0.9em;
 }
 
@@ -70,8 +73,8 @@ button {
     margin-top: 15px;
     padding: 12px 30px;
     font-size: 1.1em;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #64ffda 0%, #00bfa5 100%);
+    color: #0a0a0a;
     border: none;
     border-radius: 25px;
     cursor: pointer;
@@ -81,7 +84,7 @@ button {
 
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.6), 0 0 20px rgba(100, 255, 218, 0.3);
 }
 
 button:active {
@@ -93,29 +96,32 @@ button:active {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(100, 255, 218, 0.2);
+    border: 2px solid #333;
     z-index: 10;
 }
 
 .game-over h2 {
-    color: #e74c3c;
+    color: #ff6b6b;
     margin-bottom: 20px;
     font-size: 2em;
+    text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
 }
 
 .game-over p {
     font-size: 1.3em;
     margin-bottom: 20px;
-    color: #555;
+    color: #b0b0b0;
 }
 
 .game-over #finalScore {
-    color: #667eea;
+    color: #64ffda;
     font-weight: bold;
     font-size: 1.5em;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
 }
 
 .hidden {

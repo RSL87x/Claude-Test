@@ -20,6 +20,18 @@ let isGameRunning = false;
 let isPaused = false;
 let gameSpeed = 100;
 
+const foodColors = [
+    { fill: '#FF5722', shadow: '#FF5722', name: 'rojo' },
+    { fill: '#FFC107', shadow: '#FFC107', name: 'amarillo' },
+    { fill: '#4CAF50', shadow: '#4CAF50', name: 'verde' },
+    { fill: '#2196F3', shadow: '#2196F3', name: 'azul' },
+    { fill: '#9C27B0', shadow: '#9C27B0', name: 'morado' },
+    { fill: '#FF4081', shadow: '#FF4081', name: 'rosa' },
+    { fill: '#00BCD4', shadow: '#00BCD4', name: 'cian' },
+    { fill: '#FF9800', shadow: '#FF9800', name: 'naranja' }
+];
+let currentFoodColorIndex = 0;
+
 highScoreElement.textContent = highScore;
 
 function drawGame() {
@@ -39,10 +51,10 @@ function drawGame() {
 }
 
 function clearCanvas() {
-    ctx.fillStyle = '#f0f0f0';
+    ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = '#e0e0e0';
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 0.5;
     for (let i = 0; i < tileCount; i++) {
         ctx.beginPath();
@@ -60,13 +72,13 @@ function clearCanvas() {
 function drawSnake() {
     snake.forEach((segment, index) => {
         if (index === 0) {
-            ctx.fillStyle = '#4CAF50';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#4CAF50';
+            ctx.fillStyle = '#64ffda';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#64ffda';
         } else {
-            ctx.fillStyle = '#8BC34A';
-            ctx.shadowBlur = 5;
-            ctx.shadowColor = '#8BC34A';
+            ctx.fillStyle = '#00bfa5';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = '#00bfa5';
         }
 
         ctx.fillRect(
@@ -79,7 +91,7 @@ function drawSnake() {
         ctx.shadowBlur = 0;
 
         if (index === 0) {
-            ctx.fillStyle = '#2E7D32';
+            ctx.fillStyle = '#0a0a0a';
             const eyeSize = 3;
             const eyeOffset = 5;
 
@@ -101,9 +113,10 @@ function drawSnake() {
 }
 
 function drawFood() {
-    ctx.fillStyle = '#FF5722';
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#FF5722';
+    const currentColor = foodColors[currentFoodColorIndex];
+    ctx.fillStyle = currentColor.fill;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = currentColor.shadow;
 
     const foodX = food.x * gridSize + gridSize / 2;
     const foodY = food.y * gridSize + gridSize / 2;
@@ -115,19 +128,36 @@ function drawFood() {
 
     ctx.shadowBlur = 0;
 
-    ctx.fillStyle = '#C41C00';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.beginPath();
     ctx.arc(foodX - 2, foodY - 2, 2, 0, Math.PI * 2);
     ctx.fill();
 }
 
 function updateSnake() {
-    const head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
+    let head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
+
+    // Permitir atravesar paredes (wrapping)
+    if (head.x < 0) {
+        head.x = tileCount - 1;
+    } else if (head.x >= tileCount) {
+        head.x = 0;
+    }
+
+    if (head.y < 0) {
+        head.y = tileCount - 1;
+    } else if (head.y >= tileCount) {
+        head.y = 0;
+    }
+
     snake.unshift(head);
 
     if (head.x === food.x && head.y === food.y) {
         score++;
         scoreElement.textContent = score;
+
+        // Cambiar color de la fruta
+        currentFoodColorIndex = (currentFoodColorIndex + 1) % foodColors.length;
         generateFood();
 
         if (score > highScore) {
@@ -149,10 +179,7 @@ function updateSnake() {
 function checkCollision() {
     const head = snake[0];
 
-    if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-        return true;
-    }
-
+    // Solo verificar colisión con el cuerpo (no con paredes)
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
             return true;
