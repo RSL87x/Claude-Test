@@ -6,19 +6,23 @@ const finalScoreElement = document.getElementById('finalScore');
 const gameOverElement = document.getElementById('gameOver');
 const startButton = document.getElementById('startButton');
 const restartButton = document.getElementById('restartButton');
+const fruitCountSlider = document.getElementById('fruitCount');
+const fruitCountDisplay = document.getElementById('fruitCountDisplay');
 
 const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
 let snake = [{ x: 10, y: 10 }];
 let velocity = { x: 0, y: 0 };
-let food = { x: 15, y: 15 };
+let foods = [];
+let maxFruits = 3;
 let score = 0;
 let highScore = localStorage.getItem('snakeHighScore') || 0;
 let gameLoop;
 let isGameRunning = false;
 let isPaused = false;
 let gameSpeed = 100;
+let pulsePhase = 0;
 
 const foodColors = [
     { fill: '#FF5722', shadow: '#FF5722', name: 'rojo' },
@@ -46,7 +50,11 @@ function drawGame() {
 
     checkFoodCollision();
     clearCanvas();
-    drawFood();
+
+    // Incrementar fase de pulso para animación
+    pulsePhase += 0.1;
+
+    drawFoods();
     drawSnake();
 }
 
@@ -112,26 +120,38 @@ function drawSnake() {
     });
 }
 
-function drawFood() {
-    const currentColor = foodColors[currentFoodColorIndex];
-    ctx.fillStyle = currentColor.fill;
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = currentColor.shadow;
+function drawFoods() {
+    foods.forEach((food, index) => {
+        const currentColor = foodColors[food.colorIndex];
 
-    const foodX = food.x * gridSize + gridSize / 2;
-    const foodY = food.y * gridSize + gridSize / 2;
-    const radius = gridSize / 2 - 2;
+        // Efecto de pulso: oscila entre 0.8 y 1.2
+        const pulse = 1 + Math.sin(pulsePhase + index * 0.5) * 0.2;
+        const baseRadius = gridSize / 2 - 2;
+        const radius = baseRadius * pulse;
 
-    ctx.beginPath();
-    ctx.arc(foodX, foodY, radius, 0, Math.PI * 2);
-    ctx.fill();
+        // Brillo pulsante
+        const glowIntensity = 15 + Math.sin(pulsePhase + index * 0.5) * 10;
 
-    ctx.shadowBlur = 0;
+        ctx.fillStyle = currentColor.fill;
+        ctx.shadowBlur = glowIntensity;
+        ctx.shadowColor = currentColor.shadow;
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.beginPath();
-    ctx.arc(foodX - 2, foodY - 2, 2, 0, Math.PI * 2);
-    ctx.fill();
+        const foodX = food.x * gridSize + gridSize / 2;
+        const foodY = food.y * gridSize + gridSize / 2;
+
+        ctx.beginPath();
+        ctx.arc(foodX, foodY, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+
+        // Reflejo con opacidad variable
+        const reflectionOpacity = 0.2 + Math.sin(pulsePhase + index * 0.5) * 0.15;
+        ctx.fillStyle = `rgba(255, 255, 255, ${reflectionOpacity})`;
+        ctx.beginPath();
+        ctx.arc(foodX - 2, foodY - 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
 function updateSnake() {
@@ -152,11 +172,23 @@ function updateSnake() {
 
     snake.unshift(head);
 
-    if (head.x === food.x && head.y === food.y) {
+    // Verificar colisión con cualquier fruta
+    let foodEatenIndex = -1;
+    for (let i = 0; i < foods.length; i++) {
+        if (head.x === foods[i].x && head.y === foods[i].y) {
+            foodEatenIndex = i;
+            break;
+        }
+    }
+
+    if (foodEatenIndex !== -1) {
         score++;
         scoreElement.textContent = score;
 
-        // Cambiar color de la fruta
+        // Remover la fruta comida
+        foods.splice(foodEatenIndex, 1);
+
+        // Agregar una nueva fruta con el siguiente color
         currentFoodColorIndex = (currentFoodColorIndex + 1) % foodColors.length;
         generateFood();
 
@@ -191,32 +223,55 @@ function checkCollision() {
 
 function checkFoodCollision() {
     const head = snake[0];
-    if (head.x === food.x && head.y === food.y) {
-        return true;
+    for (let food of foods) {
+        if (head.x === food.x && head.y === food.y) {
+            return true;
+        }
     }
     return false;
 }
 
 function generateFood() {
     let newFood;
-    let foodOnSnake;
+    let validPosition;
 
     do {
-        foodOnSnake = false;
+        validPosition = true;
         newFood = {
             x: Math.floor(Math.random() * tileCount),
-            y: Math.floor(Math.random() * tileCount)
+            y: Math.floor(Math.random() * tileCount),
+            colorIndex: currentFoodColorIndex
         };
 
+        // Verificar que no esté en la serpiente
         for (let segment of snake) {
             if (segment.x === newFood.x && segment.y === newFood.y) {
-                foodOnSnake = true;
+                validPosition = false;
                 break;
             }
         }
-    } while (foodOnSnake);
 
-    food = newFood;
+        // Verificar que no esté en otra fruta
+        if (validPosition) {
+            for (let food of foods) {
+                if (food.x === newFood.x && food.y === newFood.y) {
+                    validPosition = false;
+                    break;
+                }
+            }
+        }
+    } while (!validPosition);
+
+    foods.push(newFood);
+}
+
+function initializeFoods() {
+    foods = [];
+    currentFoodColorIndex = 0;
+    for (let i = 0; i < maxFruits; i++) {
+        generateFood();
+        currentFoodColorIndex = (currentFoodColorIndex + 1) % foodColors.length;
+    }
 }
 
 function gameOver() {
@@ -232,9 +287,13 @@ function startGame() {
     score = 0;
     gameSpeed = 100;
     isPaused = false;
+    pulsePhase = 0;
     scoreElement.textContent = score;
     gameOverElement.classList.add('hidden');
-    generateFood();
+
+    // Obtener cantidad de frutas del slider
+    maxFruits = parseInt(fruitCountSlider.value);
+    initializeFoods();
 
     if (gameLoop) {
         clearInterval(gameLoop);
@@ -287,6 +346,13 @@ document.addEventListener('keydown', (e) => {
 startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 
+// Actualizar display del slider
+fruitCountSlider.addEventListener('input', (e) => {
+    fruitCountDisplay.textContent = e.target.value;
+});
+
+// Inicialización
 clearCanvas();
 drawSnake();
-drawFood();
+initializeFoods();
+drawFoods();
