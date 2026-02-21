@@ -180,17 +180,149 @@ button:active {
     display: none;
 }
 
-@media (max-width: 600px) {
+/* Controles móviles */
+.mobile-controls {
+    display: none;
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.dpad-middle {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.dpad-btn {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+    border: 2px solid #64ffda;
+    border-radius: 15px;
+    color: #64ffda;
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: all 0.1s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(100, 255, 218, 0.2);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.dpad-btn:active {
+    background: linear-gradient(145deg, #64ffda, #00bfa5);
+    color: #0a0a0a;
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(100, 255, 218, 0.6);
+}
+
+.dpad-center {
+    font-size: 1.5em;
+}
+
+.desktop-only {
+    display: block;
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
     .game-container {
-        padding: 20px;
+        padding: 15px;
+        margin: 10px;
     }
 
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 15px;
+    }
+
+    .score-board {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .score, .high-score {
+        font-size: 1em;
+    }
+
+    .score span, .high-score span {
+        font-size: 1.1em;
     }
 
     #gameCanvas {
         width: 100%;
         height: auto;
+        max-width: 400px;
+    }
+
+    .mobile-controls {
+        display: block;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    .fruit-selector {
+        padding: 12px;
+    }
+
+    .fruit-selector label {
+        font-size: 0.9em;
+    }
+
+    button#startButton,
+    button#restartButton {
+        padding: 15px 40px;
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+    .game-over {
+        width: 90%;
+        max-width: 350px;
+        padding: 30px 20px;
+    }
+
+    .game-over h2 {
+        font-size: 1.5em;
+    }
+
+    .game-over p {
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .dpad-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
+    }
+
+    .score-board {
+        flex-direction: column;
+        gap: 8px;
     }
 }

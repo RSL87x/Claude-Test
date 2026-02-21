@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Juego Snake</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,13 +17,28 @@
             <div class="high-score">Récord: <span id="highScore">0</span></div>
         </div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+        <!-- Controles móviles -->
+        <div class="mobile-controls" id="mobileControls">
+            <div class="dpad">
+                <button class="dpad-btn dpad-up" id="btnUp">▲</button>
+                <div class="dpad-middle">
+                    <button class="dpad-btn dpad-left" id="btnLeft">◄</button>
+                    <button class="dpad-btn dpad-center" id="btnPause">⏸</button>
+                    <button class="dpad-btn dpad-right" id="btnRight">►</button>
+                </div>
+                <button class="dpad-btn dpad-down" id="btnDown">▼</button>
+            </div>
+        </div>
+
         <div class="controls">
             <div class="fruit-selector">
                 <label for="fruitCount">Frutas simultáneas: <span id="fruitCountDisplay">3</span></label>
                 <input type="range" id="fruitCount" min="1" max="6" value="3">
             </div>
-            <p>Usa las flechas del teclado para mover la serpiente</p>
-            <p>Espacio: Pausar/Reanudar</p>
+            <p class="desktop-only">Usa las flechas del teclado para mover la serpiente</p>
+            <p class="desktop-only">Espacio: Pausar/Reanudar</p>
+            <p class="mobile-only">Desliza en el canvas o usa los botones para mover</p>
             <button id="startButton">Nuevo Juego</button>
         </div>
         <div id="gameOver" class="game-over hidden">

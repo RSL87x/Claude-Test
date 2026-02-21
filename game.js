@@ -9,6 +9,13 @@ const restartButton = document.getElementById('restartButton');
 const fruitCountSlider = document.getElementById('fruitCount');
 const fruitCountDisplay = document.getElementById('fruitCountDisplay');
 
+// Controles móviles
+const btnUp = document.getElementById('btnUp');
+const btnDown = document.getElementById('btnDown');
+const btnLeft = document.getElementById('btnLeft');
+const btnRight = document.getElementById('btnRight');
+const btnPause = document.getElementById('btnPause');
+
 const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
@@ -310,6 +317,18 @@ function togglePause() {
     }
 }
 
+// Función para cambiar dirección
+function changeDirection(newVelocity) {
+    if (isPaused || !isGameRunning) return;
+
+    // Prevenir movimiento 180 grados
+    if (newVelocity.x !== 0 && velocity.x !== -newVelocity.x) {
+        velocity = newVelocity;
+    } else if (newVelocity.y !== 0 && velocity.y !== -newVelocity.y) {
+        velocity = newVelocity;
+    }
+}
+
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
         e.preventDefault();
@@ -321,24 +340,16 @@ document.addEventListener('keydown', (e) => {
 
     switch (e.key) {
         case 'ArrowUp':
-            if (velocity.y !== 1) {
-                velocity = { x: 0, y: -1 };
-            }
+            changeDirection({ x: 0, y: -1 });
             break;
         case 'ArrowDown':
-            if (velocity.y !== -1) {
-                velocity = { x: 0, y: 1 };
-            }
+            changeDirection({ x: 0, y: 1 });
             break;
         case 'ArrowLeft':
-            if (velocity.x !== 1) {
-                velocity = { x: -1, y: 0 };
-            }
+            changeDirection({ x: -1, y: 0 });
             break;
         case 'ArrowRight':
-            if (velocity.x !== -1) {
-                velocity = { x: 1, y: 0 };
-            }
+            changeDirection({ x: 1, y: 0 });
             break;
     }
 });
@@ -350,6 +361,86 @@ restartButton.addEventListener('click', startGame);
 fruitCountSlider.addEventListener('input', (e) => {
     fruitCountDisplay.textContent = e.target.value;
 });
+
+// ========== CONTROLES MÓVILES ==========
+
+// Variables para detección de swipe
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+// Botones direccionales
+btnUp.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    changeDirection({ x: 0, y: -1 });
+});
+
+btnDown.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    changeDirection({ x: 0, y: 1 });
+});
+
+btnLeft.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    changeDirection({ x: -1, y: 0 });
+});
+
+btnRight.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    changeDirection({ x: 1, y: 0 });
+});
+
+btnPause.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    togglePause();
+});
+
+// También soportar clicks para desktop
+btnUp.addEventListener('click', () => changeDirection({ x: 0, y: -1 }));
+btnDown.addEventListener('click', () => changeDirection({ x: 0, y: 1 }));
+btnLeft.addEventListener('click', () => changeDirection({ x: -1, y: 0 }));
+btnRight.addEventListener('click', () => changeDirection({ x: 1, y: 0 }));
+btnPause.addEventListener('click', togglePause);
+
+// Swipe en el canvas
+canvas.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+canvas.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 30;
+
+    // Determinar si el swipe es horizontal o vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Swipe horizontal
+        if (Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX > 0) {
+                changeDirection({ x: 1, y: 0 }); // Derecha
+            } else {
+                changeDirection({ x: -1, y: 0 }); // Izquierda
+            }
+        }
+    } else {
+        // Swipe vertical
+        if (Math.abs(deltaY) > minSwipeDistance) {
+            if (deltaY > 0) {
+                changeDirection({ x: 0, y: 1 }); // Abajo
+            } else {
+                changeDirection({ x: 0, y: -1 }); // Arriba
+            }
+        }
+    }
+}
 
 // Inicialización
 clearCanvas();
